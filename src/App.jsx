@@ -8,7 +8,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 function App() {
   return (
     <Router>
-      <div className="m-3">
+      <div className="m-3 d-flex justify-content-center">
         <Routes>
           <Route path="/" element={<Busqueda />} />
           <Route

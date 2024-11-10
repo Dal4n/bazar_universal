@@ -5,6 +5,7 @@ import StarRating from "./StarRating";
 import SearchInput from "./SearchInput";
 import { useNavigate, useParams } from "react-router-dom";
 import API_BASE_URL from "../config/apiConfig";
+import ImageSlider from "./ImageSlider";
 
 const ProductDetail = () => {
   let [product, setProduct] = useState(null);
@@ -30,9 +31,23 @@ const ProductDetail = () => {
     }
   };
 
+  const fetchCompra = async (data) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/purchases`, data);
+      setProduct(response.data);
+    } catch (error) {
+      console.error("Error al guardar el registro", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo obtener la información del producto.",
+      });
+    }
+  };
+
   useEffect(() => {
     fetchProduct();
-  }, {});
+  }, []);
 
   const handlePurchase = () => {
     Swal.fire({
@@ -46,12 +61,26 @@ const ProductDetail = () => {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Muestra alerta de éxito si se confirma la compra
+        const now = new Date();
+        const fechaHora = now.toISOString().slice(0, 19);
+
+        fetchCompra({
+          feRegistro: fechaHora,
+          estado: "Completada",
+          metodoPago: "Tarjeta",
+          cantidadProductos: 1,
+          total: product.price,
+          producto: {
+            id: product.id,
+          },
+        });
         Swal.fire({
           icon: "success",
           title: "¡Compra exitosa!",
           text: "Gracias por tu compra.",
         });
+
+        navigate("/");
       }
     });
   };
@@ -75,39 +104,13 @@ const ProductDetail = () => {
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         onSearch={handleSearch}
+        isVisible={true}
       />
       <div className="container text-center mt-5 card p-3">
-        <div style={{ width: "100%", overflowX: "auto" }}>
-          {product.images.map((img, index) => (
-            <div
-              key={index}
-              className="m-3"
-              style={{
-                width: "100px",
-                height: "100px",
-                overflow: "hidden",
-                borderRadius: "50%",
-                boxShadow: "0 0 15px 1px #c3c3c3",
-              }}
-            >
-              <img
-                src={img}
-                alt="product"
-                className="img-fluid border-rounded"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            </div>
-          ))}
-        </div>
-
+        <ImageSlider images={product.images} />
         <h2 className="mt-3">{product.title}</h2>
         <h4 className="text-muted">{product.category.toUpperCase()}</h4>
         <p className="text-muted">{product.description}</p>
-
         <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3">
           <span>
             <strong>Marca: </strong>
@@ -124,12 +127,10 @@ const ProductDetail = () => {
             </strong>
           </span>
         </div>
-
         <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3">
           <h3 className="mb-3 mb-sm-0">$ {product.price}.00</h3>
           <StarRating rating={product.rating} />
         </div>
-
         <button
           className="btn btn-outline-success mt-4"
           onClick={handlePurchase}

@@ -16,7 +16,10 @@ const Busqueda = () => {
   };
 
   return (
-    <div className="text-center mt-5 d-flex justify-content-center align-items-center flex-column">
+    <div
+      className="text-center mt-5 d-flex justify-content-center align-items-center flex-column"
+      style={{ width: "60%" }}
+    >
       <h1>Bazar Online</h1>
       <div
         className="m-4"
@@ -43,12 +46,13 @@ const Busqueda = () => {
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         onSearch={handleSearch}
+        isVisible={false}
       />
 
       <button
         className="btn btn-outline-warning mt-4"
         onClick={handlePurchases}
-        style={{ width: "50%" }}
+        style={{ width: "100%" }}
       >
         Compras
       </button>

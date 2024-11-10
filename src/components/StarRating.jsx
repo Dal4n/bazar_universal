@@ -1,6 +1,6 @@
 import ReactStars from "react-rating-stars-component";
 
-const StarRating = ({ rating, onRatingChange }) => {
+const StarRating = ({ rating = 0, size = 24 }) => {
   return (
     <ReactStars
       count={5}
